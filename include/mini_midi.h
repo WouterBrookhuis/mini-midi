@@ -31,11 +31,24 @@ typedef enum
   MM_EVENT_TYPE_PROGRAM_CHANGE = 0xC,
   MM_EVENT_TYPE_CHANNEL_AFTERTOUCH = 0xD,
   MM_EVENT_TYPE_PITCH_BLEND = 0xE,
+  MM_EVENT_TYPE_META = 0xF,
 } mm_event_type_t;
 
 typedef struct
 {
+  mm_channel_t channel;
+  uint8_t note;
+  uint8_t amount;
+} mm_event_note_t;
+
+typedef struct
+{
   mm_event_type_t type;
+  uint32_t deltaTime;
+  union
+  {
+    mm_event_note_t note;
+  };
 } mm_event_t;
 
 typedef struct
@@ -53,4 +66,8 @@ typedef struct
 
 //typedef struct mm_player_t mm_player_t;
 
-bool mm_read_header(const uint8_t *buffer, size_t bufferSize, mm_header_t *header);
+size_t mm_read_header(const uint8_t *buffer, size_t bufferSize, mm_header_t *header);
+
+size_t mm_read_track_chunk(const uint8_t *buffer, size_t bufferSize, uint32_t *trackSize);
+
+size_t mm_read_track_event(const uint8_t *buffer, size_t bufferSize, mm_event_t *event);
